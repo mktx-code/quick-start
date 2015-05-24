@@ -80,7 +80,7 @@ echo -e "relay or bridge?"
                 echo -e "ORPort 11443\nExtORPort 22443\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed" > /etc/tor/torrc
                 echo -e "\033[1;33m""\nNICKNAME?""\033[0m"
                   read NICK
-                echo -e -n "Nickname $NICK"\n" >> /etc/tor/torrc
+                echo -e -n "Nickname "$NICK"\n" >> /etc/tor/torrc
                 echo -e "#\n#\n" >> /etc/tor/torrc
                 service tor start
             else
