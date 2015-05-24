@@ -5,7 +5,7 @@ set -e
 SSH_CONF=/etc/ssh/sshd_config
 mv $SSH_CONF /etc/ssh/sshd_config.bak
 touch $SSH_CONF
-echo -e $YLW"Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits."$END
+echo -e "$RED""Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits.""$END"
   echo -e "$RED"
   read SSH_PORT
   echo -e "$END"
@@ -15,14 +15,14 @@ echo -e $YLW"Please select the new port for ssh (default is 22).\nIt should be a
           echo -e $RED"THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"$END
           exit 0
       fi
-echo -e $YLW"Do you want to add an ssh key? (Y/no)"$END
+echo -e "$RED""Do you want to add an ssh key? (Y/no)""$END"
   echo -e "$RED"
   read HAVE_KEY
   echo -e "$END"
     if [[ $HAVE_KEY = no ]]; then
         sleep 1
     else
-        echo -e $YLW"Please paste your public key (beginning with ssh-rsa)."$END
+        echo -e "$RED""Please paste your public key (beginning with ssh-rsa).""$END"
           echo -e "$RED"
           read SSH_KEY
           echo -e "$END"
