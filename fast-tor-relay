@@ -2,39 +2,33 @@
 set -e
 #
 SSH_CONF=/etc/ssh/sshd_config
-mv $SSH_CONF /etc/ssh/sshd_config.bak
-touch $SSH_CONF
-echo -e "$BLUE""Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits.""$END"
-echo -e "$RED"
+mv "$SSH_CONF" /etc/ssh/sshd_config.bak
+touch "$SSH_CONF"
+echo -e "Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits."
 read SSH_PORT
-echo -e "$END"
-if [[ $SSH_PORT -ge 1 || $SSH_PORT -le 99999 ]]; then
-echo -e "\nPort $SSH_PORT\n" > $SSH_CONF
+if [[ "$SSH_PORT" -ge "1" || "$SSH_PORT" -le "99999" ]]; then
+echo -e "\nPort $SSH_PORT\n" > "$SSH_CONF"
 else
-echo -e $RED"THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"$END
+echo -e "THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"
 exit 0
 fi
-echo -e "$BLUE""Do you want to add an ssh key? (Y/no)""$END"
-echo -e "$RED"
+echo -e "Do you want to add an ssh key? (Y/no)"
 read HAVE_KEY
-echo -e "$END"
-if [[ $HAVE_KEY = no ]]; then
+if [[ "$HAVE_KEY" = "no" ]]; then
 sleep 1
 else
-echo -e "$BLUE""Please paste your public key (beginning with ssh-rsa).""$END"
-echo -e "$RED"
+echo -e "Please paste your public key (beginning with ssh-rsa)."
 read SSH_KEY
-echo -e "$END"
 if [[ -e /"$USER"/.ssh ]]; then
-echo -e "\n$SSH_KEY" >> /$USER/.ssh/authorized_keys
+echo -e "\n"$SSH_KEY""" >> /"$USER"/.ssh/authorized_keys
 else
-mkdir /$USER/.ssh/
-echo -e "$SSH_KEY" > /$USER/.ssh/authorized_keys
+mkdir /"$USER"/.ssh/
+echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
 fi
 fi
 echo -e "\nPasswordAuthentication no\n\nPermitRootLogin without-password\n\nStrictModes yes\n\nProtocol 2\n\nIgnoreRhosts yes\n\nGSSAPIAuthentication no\n\nChallengeResponseAuthentication no\n\nKerberosAuthentication no\n\nHostbasedAuthentication no\n\nX11Forwarding no\n\nPrintLastLog yes\n\nPermitEmptyPasswords no\n\nUsePriveledgeSeperation yes\n\nUseLogin no\n\nPermitUserEnvironment no\n\nUsePAM no\n\nAllowTcpForwarding no\n\nLoginGraceTime 300\n\nMaxStartups 2\n\nCiphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128\n" >> "$SSH_CONF"
-mv $SSH_CONF /root/temp.sshconf
-sed '/^$/d' /root/temp.sshconf > $SSH_CONF
+mv "$SSH_CONF" /root/temp.sshconf
+sed '/^$/d' /root/temp.sshconf > "$SSH_CONF"
 rm -f /root/temp.sshconf
 chmod 0700 /root/.ssh
 chmod 0600 /root/.ssh/*
@@ -59,20 +53,20 @@ touch /etc/tor/torrc
 echo -e "relay or bridge?"
   read RELAY
     if [[ "$RELAY" = "relay" ]]; then
-        echo -e "\033[1;33m""Setting up for a relay.""\033[0m"
+        echo -e "Setting up for a relay."
         service tor stop
         mv /etc/tor/torrc /etc/tor/torrc.bak
         echo -e "ORPort 22443\nDirPort 80\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0" > /etc/tor/torrc
-        echo -e "\033[1;33m""\nNICKNAME?""\033[0m"
+        echo -e "\nNICKNAME?"
         read NICK
-        echo -e "\033[1;33m""\nCONTACT?""\033[0m"
+        echo -e "\nCONTACT?"
           read CONTACT
         echo -e -n "Nickname "$NICK"\nContactInfo "$CONTACT"\n" >> /etc/tor/torrc
         echo -e "#\n#\n" >> /etc/tor/torrc
         service tor start
 
     else
-        echo -e "\033[1;33m""Public or private bridge? (pub/priv)""\033[0m"
+        echo -e "Public or private bridge? (pub/priv)"
           read PUB_PRIV
             if [[ "$PUB_PRIV" = "pub" ]]; then
                 service tor stop
@@ -80,7 +74,7 @@ echo -e "relay or bridge?"
                 echo -e "ORPort 11443\nExtORPort 22443\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed" > /etc/tor/torrc
                 echo -e "\033[1;33m""\nNICKNAME?""\033[0m"
                   read NICK
-                echo -e -n "Nickname "$NICK"\n" >> /etc/tor/torrc
+                echo -e "\nNickname "$NICK"\n" >> /etc/tor/torrc
                 echo -e "#\n#\n" >> /etc/tor/torrc
                 service tor start
             else
