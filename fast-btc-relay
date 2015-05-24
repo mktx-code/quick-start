@@ -50,41 +50,51 @@ service ntp start
 apt-get install -y git automake pkg-config build-essential libtool autotools-dev autoconf libssl-dev libboost-all-dev libdb-dev libdb++-dev
 mkdir /root/bitcoinsrc 
 cd /root/bitcoinsrc
-git clone https://github.com/bitcoin/bitcoin
-cd bitcoin
-git checkout master
-./autogen.sh
-./configure --disable-wallet --with-cli --without-gui --enable-cxx --disable-shared --with-pic
-make
-make install
+# Not so fast to build 
+echo "Build from source? (Y/no)"
+  read FRESH_BUILD
+    if [[  "$FRESH_BUILD" != "no" ]]; then
+        git clone https://github.com/bitcoin/bitcoin
+        cd bitcoin
+        git checkout master
+       ./autogen.sh
+       ./configure --disable-wallet --with-cli --without-gui --enable-cxx --disable-shared --with-pic
+       make
+       make install
+       echo -e "sudo –u bitnode –i bitcoind\nexit 0" > /etc/rc.local
+    else
+        wget https://bitcoin.org/bin/bitcoin-core-0.10.2/bitcoin-0.10.2-linux64.tar.gz
+        tar xf *.tar.gz
+        rm -rf *.tar.gz
+        echo -e "sudo –u bitnode –i /home/bitnode/bitcoin-0.10.2/bin/bitcoind\nexit 0" > /etc/rc.local
+    fi
 adduser bitnode
 adduser bitnode sudo
 RPC_PASS=$(pwgen -n -s 68 1)
 RPC_USER=user$(pwgen -B -n -s 10 1)
-  if [[  "$HS_RELAY" != "no" ]]
-      echo -e "HiddenServiceDir /var/lib/tor/bitcoin-server/\nHiddenServicePort 8333 127.0.0.1:8333\n" >> /etc/tor/torrc
-      service tor reload
-      HS_URL=$(sudo cat /var/lib/tor/bitcoin-server/hostname)
-      echo -e "Hidden service address is:"
-      echo -e "$HS_URL""\033[0m"
-      echo -d "\nEnter to continue"
-      chattr -i /etc/resolv.conf
-      echo "nameserver 127.0.0.1" > /etc/resolv.conf
-      chattr +i /etc/resolv.conf
-        read
-      echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nproxy=127.0.0.1:9050\nexternalip="$HS_URL"\nlisten=1\nbind=127.0.0.1:8333" > /home/bitnode/.bitcoin/bitcoin.conf
-      echo -e "Do you want your node to be accessible to all or only tor users? (all/tor)"
-        read TOR_ALL
+if [[  "$HS_RELAY" != "no" ]]
+    echo -e "HiddenServiceDir /var/lib/tor/bitcoin-server/\nHiddenServicePort 8333 127.0.0.1:8333\n" >> /etc/tor/torrc
+    service tor reload
+    HS_URL=$(sudo cat /var/lib/tor/bitcoin-server/hostname)
+    echo -e "Hidden service address is:"
+    echo -e "$HS_URL""\033[0m"
+    echo -d "\nEnter to continue"
+    chattr -i /etc/resolv.conf
+    echo "nameserver 127.0.0.1" > /etc/resolv.conf
+    chattr +i /etc/resolv.conf
+      read
+    echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nproxy=127.0.0.1:9050\nexternalip="$HS_URL"\nlisten=1\nbind=127.0.0.1:8333" > /home/bitnode/.bitcoin/bitcoin.conf
+    echo -e "Do you want your node to be accessible to all or only tor users? (all/tor)"
+      read TOR_ALL
           if [[ "$TOR_ALL" = "all" ]]; then
               echo -e "bind=0.0.0.0:8334\nexternalip="$IP"" >> /home/bitnode/.bitcoin/bitcoin.conf
           else
               echo "onlynet=onion" >> /home/bitnode/.bitcoin/bitcoin.conf
           fi
-      echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
-      chown -R bitnode /home/bitnode/.bitcoin
-      echo -e "sudo –u bitnode –i bitcoind\nexit 0" > /etc/rc.local
-  else
-      echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nlisten=1\nbind=0.0.0.0:8333\nexternalip="$IP"" > /home/bitnode/.bitcoin/bitcoin.conf
-  fi
+    echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
+    chown -R bitnode /home/bitnode/.bitcoin
+else
+    echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nlisten=1\nbind=0.0.0.0:8333\nexternalip="$IP"" > /home/bitnode/.bitcoin/bitcoin.conf
+fi
 rm -rf /root/ip
 exit 0
