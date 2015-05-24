@@ -1,0 +1,88 @@
+#!/bin/bash
+set -e
+#
+echo -e "Hidden service relay? (Y/no)"
+  read HS_RELAY
+echo -e "Collecting external ip"
+sudo wget -q wtfismyip.com/text -O /root/ip
+IP=$(sudo cat /root/ip)
+SSH_CONF=/etc/ssh/sshd_config
+mv $SSH_CONF /etc/ssh/sshd_config.bak
+touch $SSH_CONF
+echo -e "$BLUE""Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits.""$END"
+    read SSH_PORT
+      if [[ $SSH_PORT -ge 1 || $SSH_PORT -le 99999 ]]; then
+          echo -e "\nPort $SSH_PORT\n" > $SSH_CONF
+      else
+          echo -e $RED"THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"$END
+          exit 0
+      fi
+echo -e "$BLUE""Do you want to add an ssh key? (Y/no)""$END"
+  read HAVE_KEY
+    if [[ $HAVE_KEY = no ]]; then
+        sleep 1
+    else
+        echo -e "$BLUE""Please paste your public key (beginning with ssh-rsa).""$END"
+          read SSH_KEY
+            if [[ -e /"$USER"/.ssh ]]; then
+                echo -e "\n$SSH_KEY" >> /$USER/.ssh/authorized_keys
+            else
+                mkdir /$USER/.ssh/
+                echo -e "$SSH_KEY" > /$USER/.ssh/authorized_keys
+            fi
+    fi
+echo -e "\nPasswordAuthentication no\n\nPermitRootLogin without-password\n\nStrictModes yes\n\nProtocol 2\n\nIgnoreRhosts yes\n\nGSSAPIAuthentication no\n\nChallengeResponseAuthentication no\n\nKerberosAuthentication no\n\nHostbasedAuthentication no\n\nX11Forwarding no\n\nPrintLastLog yes\n\nPermitEmptyPasswords no\n\nUsePriveledgeSeperation yes\n\nUseLogin no\n\nPermitUserEnvironment no\n\nUsePAM no\n\nAllowTcpForwarding no\n\nLoginGraceTime 300\n\nMaxStartups 2\n\nCiphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128\n" >> "$SSH_CONF"
+mv $SSH_CONF /root/temp.sshconf
+sed '/^$/d' /root/temp.sshconf > $SSH_CONF
+rm -f /root/temp.sshconf
+chmod 0700 /root/.ssh
+chmod 0600 /root/.ssh/*
+service ssh restart
+echo -e "$RED"
+cat /etc/ssh/sshd_config
+echo -e "$END"
+echo -e "$BLUE""\nPress enter to start updating and set time.""$END"
+  read
+apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
+apt-get -y install nano screen sudo ntp ntpdate haveged attr
+service ntp stop
+ntpdate 0.europe.pool.ntp.org
+service ntp start
+apt-get –y install git automake pkg-config build-essential libtool autotools-dev autoconf libssl-dev libboost-all-dev libdb-dev libdb++-dev
+mkdir /root/bitcoinsrc 
+cd /root/bitcoinsrc
+git clone https://github.com/bitcoin/bitcoin
+cd bitcoin
+git checkout master
+./autogen.sh
+./configure --disable-wallet --with-cli --without-gui --enable-cxx --disable-shared --with-pic
+make
+make install
+adduser bitnode
+adduser bitnode sudo
+RPC_PASS=$(pwgen -n -s 68 1)
+RPC_USER=user$(pwgen -B -n -s 10 1)
+  if [[  "$HS_RELAY" = "relay" ]]
+      echo -e "HiddenServiceDir /var/lib/tor/bitcoin-server/\nHiddenServicePort 8333 127.0.0.1:8333\n" >> /etc/tor/torrc
+      service tor reload
+      HS_URL=$(sudo cat /var/lib/tor/bitcoin-server/hostname)
+      echo -e "Hidden service address is:"
+      echo -e "$HS_URL""\033[0m"
+      echo -d "\nEnter to continue"
+        read
+      echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nproxy=127.0.0.1:9050\nexternalip="$HS_URL"\nlisten=1\nbind=127.0.0.1:8333" > /home/bitnode/.bitcoin/bitcoin.conf
+      echo -e "Do you want your node to be accessible to all or only tor users? (all/tor)"
+        read TOR_ALL
+          if [[ "$TOR_ALL" = "all" ]]; then
+              echo -e "bind=0.0.0.0:8334\nexternalip="$IP"" >> /home/bitnode/.bitcoin/bitcoin.conf
+          else
+              echo "onlynet=onion" >> /home/bitnode/.bitcoin/bitcoin.conf
+          fi
+      echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
+      chown -R bitnode /home/bitnode/.bitcoin
+      echo -e "sudo –u bitnode –i bitcoind\nexit 0" > /etc/rc.local
+  else
+      echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nlisten=1\nbind=0.0.0.0:8333\nexternalip="$IP"" > /home/bitnode/.bitcoin/bitcoin.conf
+  fi
+rm -rf /root/ip
+exit 0
