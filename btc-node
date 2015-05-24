@@ -83,7 +83,7 @@ MAKE_USER="$(cat /etc/passwd | grep -c bitnode)"
   else
       sleep 1
   fi
-BTC_DIR_EXISTS="$(ls /home/bitnode/ | grep -c ".bitcoin")"
+BTC_DIR_EXISTS="$(ls -al /home/bitnode/ | grep -c ".bitcoin")"
   if [[ "$BTC_DIR_EXISTS" -lt "1" ]]; then
       mkdir /home/bitnode/.bitcoin
       touch /home/bitnode/.bitcoin/bitcoin.conf
