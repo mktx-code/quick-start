@@ -82,7 +82,8 @@ MAKE_USER="$(cat /etc/passwd | grep -c bitnode)"
       mkdir /home/bitnode/.bitcoin
       touch /home/bitnode/.bitcoin/bitcoin.conf
   else
-      sleep 1
+      mkdir /home/bitnode/.bitcoin
+      touch /home/bitnode/.bitcoin/bitcoin.conf
   fi
 mv /root/bitcoinsrc/bitcoin* /home/bitnode/
 RPC_PASS=$(pwgen -n -s 68 1)
@@ -110,6 +111,7 @@ if [[  "$HS_RELAY" != "no" ]]; then
     chown -R bitnode /home/bitnode/.bitcoin
 else
     echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nlisten=1\nbind=0.0.0.0:8333\nexternalip="$IP"" > /home/bitnode/.bitcoin/bitcoin.conf
+    chown -R bitnode /home/bitnode/.bitcoin
 fi
 rm -rf /root/ip
 exit 0
