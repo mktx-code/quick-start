@@ -56,6 +56,7 @@ service ntp start
 apt-get install -y git automake pkg-config build-essential libtool autotools-dev autoconf libssl-dev libboost-all-dev libdb-dev libdb++-dev
 mkdir /root/bitcoinsrc 
 cd /root/bitcoinsrc
+rm -rf /home/bitnode/.bitcoin
 # Not so fast to build 
 echo "Build from source? (Y/no)"
   read FRESH_BUILD
@@ -82,13 +83,6 @@ MAKE_USER="$(cat /etc/passwd | grep -c bitnode)"
       touch /home/bitnode/.bitcoin/bitcoin.conf
   else
       sleep 1
-  fi
-BTC_DIR_EXISTS="$(ls -al /home/bitnode/ | grep -c ".bitcoin")"
-  if [[ "$BTC_DIR_EXISTS" -lt "1" ]]; then
-      mkdir /home/bitnode/.bitcoin
-      touch /home/bitnode/.bitcoin/bitcoin.conf
-  else
-      touch /home/bitnode/.bitcoin/bitcoin.conf
   fi
 mv /root/bitcoinsrc/bitcoin* /home/bitnode/
 RPC_PASS=$(pwgen -n -s 68 1)
