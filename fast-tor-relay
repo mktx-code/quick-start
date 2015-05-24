@@ -39,11 +39,6 @@ rm -f /root/temp.sshconf
 chmod 0700 /root/.ssh
 chmod 0600 /root/.ssh/*
 service ssh restart
-echo -e "$RED"
-cat /etc/ssh/sshd_config
-echo -e "$END"
-echo -e "$BLUE""\nPress enter to start updating and set time.""$END"
-read
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
 apt-get -y install nano screen sudo ntp ntpdate haveged attr
 service ntp stop
