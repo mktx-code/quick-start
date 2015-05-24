@@ -94,6 +94,5 @@ echo -e "relay or bridge?"
                 service tor start
             fi
         fi
-STATUS_STRING=""%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a ""
-echo -e "\nhardstatus on\nhardstatus alwayslastline\nhardstatus string "$STATUS_STRING"\n" >> /etc/screenrc
+echo -e "\nhardstatus on\nhardstatus alwayslastline\nhardstatus string `"%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m%d %C%a "`" >> /etc/screenrc
 exit 0
