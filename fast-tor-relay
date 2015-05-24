@@ -51,8 +51,7 @@ ntpdate 0.europe.pool.ntp.org
 service ntp start
 RELEASE="$(lsb_release -c | cut -b 10-)"
 echo -e "\ndeb http://deb.torproject.org/torproject.org "$RELEASE" main" >> /etc/apt/sources.list
-gpg --keyserver keys.gnupg.net --recv A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89
-gpg --export 886DDD89 | apt-key add –
+gpg --keyserver keys.gnupg.net --recv A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89; gpg --export 886DDD89 | apt-key add -
 apt-get update
 apt-get -y install deb.torproject.org-keyring
 apt-get -y install tor tor-arm obfsproxy unbound
