@@ -17,18 +17,18 @@ echo -e "Please select the new port for ssh (default is 22).\nIt should be a num
           echo -e "THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"
           exit 0
       fi
-echo -e Do you want to add an ssh key? (Y/no)"
+echo -e "Do you want to add an ssh key? (Y/no)"
   read HAVE_KEY
     if [[ "$HAVE_KEY" = "no" ]]; then
         sleep 1
     else
-        echo -e Please paste your public key (beginning with ssh-rsa)."
+        echo -e "Please paste your public key (beginning with ssh-rsa)."
           read SSH_KEY
             if [[ -e /"$USER"/.ssh ]]; then
-                echo -e "\n"$SSH_KEY""" >> /"$USER"/.ssh/authorized_keys
+                echo -e "\n"$SSH_KEY"" >> /"$USER"/.ssh/authorized_keys"
             else
                 mkdir /"$USER"/.ssh/
-                echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
+                echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys"
             fi
     fi
 echo -e "\nPasswordAuthentication no\n\nPermitRootLogin without-password\n\nStrictModes yes\n\nProtocol 2\n\nIgnoreRhosts yes\n\nGSSAPIAuthentication no\n\nChallengeResponseAuthentication no\n\nKerberosAuthentication no\n\nHostbasedAuthentication no\n\nX11Forwarding no\n\nPrintLastLog yes\n\nPermitEmptyPasswords no\n\nUsePriveledgeSeperation yes\n\nUseLogin no\n\nPermitUserEnvironment no\n\nUsePAM no\n\nAllowTcpForwarding no\n\nLoginGraceTime 300\n\nMaxStartups 2\n\nCiphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128\n" >> "$SSH_CONF"
