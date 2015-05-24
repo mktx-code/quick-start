@@ -89,6 +89,7 @@ MAKE_USER="$(cat /etc/passwd | grep -c bitnode)"
             touch /home/bitnode/.bitcoin/bitcoin.conf
         fi
   fi
+mv /root/bitcoinsrc/bitcoin* /home/bitnode/
 RPC_PASS=$(pwgen -n -s 68 1)
 RPC_USER=user$(pwgen -B -n -s 10 1)
 if [[  "$HS_RELAY" != "no" ]]; then
