@@ -70,6 +70,7 @@ rm -f /root/temp.sshconf
 cat /etc/ssh/sshd_config
 echo -e "\nPress enter."
   read
+apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
 apt-get install ntp ntpdate sudo screen git haveged curl atop pwgen secure-delete lvm2 cryptsetup -y
 service ntp stop
 ntpdate 0.europe.pool.ntp.org
