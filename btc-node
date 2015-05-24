@@ -2,10 +2,6 @@
 set -e
 #
 clear
-echo -e "Stop tor."
-service tor stop
-chattr -i /etc/resolv.conf
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
 echo -e "Hidden service relay? (Y/no)"
   read HS_RELAY
     if [[ "$HS_RELAY" != "no" ]]; then
