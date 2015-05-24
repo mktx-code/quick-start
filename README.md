@@ -1,2 +1,2 @@
 # quick-start
-get my server initialized fast
+Initializing different purpose servers quickly.
