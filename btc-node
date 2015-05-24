@@ -53,14 +53,19 @@ echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "
 service ntp stop
 ntpdate 0.europe.pool.ntp.org
 service ntp start
-apt-get install -y git automake pkg-config build-essential libtool autotools-dev autoconf libssl-dev libboost-all-dev libdb-dev libdb++-dev
-mkdir /root/bitcoinsrc 
+BTCSRC_EXISTS="$(ls -al /root/ | grep -c "bitcoinsrc")"
+  if [[ "$BTCSRC_EXISTS" -lt "1" ]]; then
+      mkdir /root/bitcoinsrc
+  else
+      sleep 1
+  fi
 cd /root/bitcoinsrc
 rm -rf /home/bitnode/.bitcoin
 # Not so fast to build 
 echo "Build from source? (Y/no)"
   read FRESH_BUILD
     if [[  "$FRESH_BUILD" != "no" ]]; then
+        apt-get install -y automake pkg-config build-essential libtool autotools-dev autoconf libssl-dev libboost-all-dev libdb-dev libdb++-dev
         git clone https://github.com/bitcoin/bitcoin
         cd bitcoin
         git checkout master
