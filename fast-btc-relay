@@ -45,6 +45,7 @@ echo -e "$BLUE""\nPress enter to start updating and set time.""$END"
   read
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
 apt-get -y install nano screen sudo ntp ntpdate haveged attr
+echo -e "\nhardstatus on\nhardstatus alwayslastline\nhardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "\n" >> /etc/screenrc
 service ntp stop
 ntpdate 0.europe.pool.ntp.org
 service ntp start
@@ -62,13 +63,16 @@ adduser bitnode
 adduser bitnode sudo
 RPC_PASS=$(pwgen -n -s 68 1)
 RPC_USER=user$(pwgen -B -n -s 10 1)
-  if [[  "$HS_RELAY" = "relay" ]]
+  if [[  "$HS_RELAY" != "no" ]]
       echo -e "HiddenServiceDir /var/lib/tor/bitcoin-server/\nHiddenServicePort 8333 127.0.0.1:8333\n" >> /etc/tor/torrc
       service tor reload
       HS_URL=$(sudo cat /var/lib/tor/bitcoin-server/hostname)
       echo -e "Hidden service address is:"
       echo -e "$HS_URL""\033[0m"
       echo -d "\nEnter to continue"
+      chattr -i /etc/resolv.conf
+      echo "nameserver 127.0.0.1" > /etc/resolv.conf
+      chattr +i /etc/resolv.conf
         read
       echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nproxy=127.0.0.1:9050\nexternalip="$HS_URL"\nlisten=1\nbind=127.0.0.1:8333" > /home/bitnode/.bitcoin/bitcoin.conf
       echo -e "Do you want your node to be accessible to all or only tor users? (all/tor)"
