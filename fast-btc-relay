@@ -4,7 +4,7 @@ set -e
 echo -e "Hidden service relay? (Y/no)"
   read HS_RELAY
 echo -e "Collecting external ip"
-sudo wget -q wtfismyip.com/text -O /root/ip
+wget -q wtfismyip.com/text -O /root/ip
 IP=$(sudo cat /root/ip)
 SSH_CONF=/etc/ssh/sshd_config
 mv $SSH_CONF /etc/ssh/sshd_config.bak
