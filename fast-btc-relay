@@ -42,12 +42,12 @@ cat /etc/ssh/sshd_config
 echo -e "\nPress enter to start updating and set time."
   read
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
-apt-get -y install nano screen sudo ntp ntpdate haveged attr
+apt-get install -y nano screen sudo ntp ntpdate haveged attr
 echo -e "\nhardstatus on\nhardstatus alwayslastline\nhardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "\n" >> /etc/screenrc
 service ntp stop
 ntpdate 0.europe.pool.ntp.org
 service ntp start
-apt-get –y install git automake pkg-config build-essential libtool autotools-dev autoconf libssl-dev libboost-all-dev libdb-dev libdb++-dev
+apt-get install -y git automake pkg-config build-essential libtool autotools-dev autoconf libssl-dev libboost-all-dev libdb-dev libdb++-dev
 mkdir /root/bitcoinsrc 
 cd /root/bitcoinsrc
 git clone https://github.com/bitcoin/bitcoin
