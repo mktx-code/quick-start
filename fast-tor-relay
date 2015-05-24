@@ -35,7 +35,7 @@ chmod 0600 /root/.ssh/*
 service ssh restart
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
 apt-get -y install nano screen sudo ntp ntpdate haveged attr
-echo -e "\nhardstatus on\nhardstatus alwayslastline\nhardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m%d %C%a "" >> /etc/screenrc
+echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
 service ntp stop
 ntpdate 0.europe.pool.ntp.org
 service ntp start
