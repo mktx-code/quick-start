@@ -9,7 +9,7 @@ IP="$(cat /root/ip)"
 SSH_CONF=/etc/ssh/sshd_config
 mv "$SSH_CONF" /etc/ssh/sshd_config.bak
 touch "$SSH_CONF"
-echo -e Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits."
+echo -e "Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits."
     read SSH_PORT
       if [[ "$SSH_PORT" -ge "1" || "$SSH_PORT" -le 99999 ]]; then
           echo -e "\nPort $SSH_PORT\n" > "$SSH_CONF"
