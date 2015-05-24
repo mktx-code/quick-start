@@ -94,6 +94,7 @@ mv /root/bitcoinsrc/bitcoin* /home/bitnode/
 RPC_PASS=$(pwgen -n -s 68 1)
 RPC_USER=user$(pwgen -B -n -s 10 1)
 if [[  "$HS_RELAY" != "no" ]]; then
+    service tor start
     echo -e "HiddenServiceDir /var/lib/tor/bitcoin-server/\nHiddenServicePort 8333 127.0.0.1:8333\n" >> /etc/tor/torrc
     service tor reload
     HS_URL=$(sudo cat /var/lib/tor/bitcoin-server/hostname)
