@@ -1,7 +1,7 @@
 #!/bin/bash
 RED="\033[0;31m"
 END="\033[0m"
-set-e
+set -e
 SSH_CONF=/etc/ssh/sshd_config
 mv $SSH_CONF /etc/ssh/sshd_config.bak
 touch $SSH_CONF
