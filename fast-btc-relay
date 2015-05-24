@@ -5,43 +5,41 @@ echo -e "Hidden service relay? (Y/no)"
   read HS_RELAY
 echo -e "Collecting external ip"
 wget -q wtfismyip.com/text -O /root/ip
-IP=$(sudo cat /root/ip)
+IP="$(cat /root/ip)"
 SSH_CONF=/etc/ssh/sshd_config
-mv $SSH_CONF /etc/ssh/sshd_config.bak
-touch $SSH_CONF
-echo -e "$BLUE""Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits.""$END"
+mv "$SSH_CONF" /etc/ssh/sshd_config.bak
+touch "$SSH_CONF"
+echo -e Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits."
     read SSH_PORT
-      if [[ $SSH_PORT -ge 1 || $SSH_PORT -le 99999 ]]; then
-          echo -e "\nPort $SSH_PORT\n" > $SSH_CONF
+      if [[ "$SSH_PORT" -ge "1" || "$SSH_PORT" -le 99999 ]]; then
+          echo -e "\nPort $SSH_PORT\n" > "$SSH_CONF"
       else
-          echo -e $RED"THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"$END
+          echo -e "THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"
           exit 0
       fi
-echo -e "$BLUE""Do you want to add an ssh key? (Y/no)""$END"
+echo -e Do you want to add an ssh key? (Y/no)"
   read HAVE_KEY
-    if [[ $HAVE_KEY = no ]]; then
+    if [[ "$HAVE_KEY" = "no" ]]; then
         sleep 1
     else
-        echo -e "$BLUE""Please paste your public key (beginning with ssh-rsa).""$END"
+        echo -e Please paste your public key (beginning with ssh-rsa)."
           read SSH_KEY
             if [[ -e /"$USER"/.ssh ]]; then
-                echo -e "\n$SSH_KEY" >> /$USER/.ssh/authorized_keys
+                echo -e "\n"$SSH_KEY""" >> /"$USER"/.ssh/authorized_keys
             else
-                mkdir /$USER/.ssh/
-                echo -e "$SSH_KEY" > /$USER/.ssh/authorized_keys
+                mkdir /"$USER"/.ssh/
+                echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
             fi
     fi
 echo -e "\nPasswordAuthentication no\n\nPermitRootLogin without-password\n\nStrictModes yes\n\nProtocol 2\n\nIgnoreRhosts yes\n\nGSSAPIAuthentication no\n\nChallengeResponseAuthentication no\n\nKerberosAuthentication no\n\nHostbasedAuthentication no\n\nX11Forwarding no\n\nPrintLastLog yes\n\nPermitEmptyPasswords no\n\nUsePriveledgeSeperation yes\n\nUseLogin no\n\nPermitUserEnvironment no\n\nUsePAM no\n\nAllowTcpForwarding no\n\nLoginGraceTime 300\n\nMaxStartups 2\n\nCiphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128\n" >> "$SSH_CONF"
-mv $SSH_CONF /root/temp.sshconf
-sed '/^$/d' /root/temp.sshconf > $SSH_CONF
+mv "$SSH_CONF" /root/temp.sshconf
+sed '/^$/d' /root/temp.sshconf > "$SSH_CONF"
 rm -f /root/temp.sshconf
 chmod 0700 /root/.ssh
 chmod 0600 /root/.ssh/*
 service ssh restart
-echo -e "$RED"
 cat /etc/ssh/sshd_config
-echo -e "$END"
-echo -e "$BLUE""\nPress enter to start updating and set time.""$END"
+echo -e "\nPress enter to start updating and set time."
   read
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
 apt-get -y install nano screen sudo ntp ntpdate haveged attr
