@@ -55,6 +55,7 @@ gpg --keyserver keys.gnupg.net --recv A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89; 
 apt-get update
 apt-get -y install deb.torproject.org-keyring
 apt-get -y install tor tor-arm obfsproxy unbound
+chattr -i /etc/resolv.conf
 echo "nameserver 127.0.0.1" > /etc/resolv.conf
 chattr +i /etc/resolv.conf
 mv /etc/tor/torrc /etc/tor/torrc.bak
