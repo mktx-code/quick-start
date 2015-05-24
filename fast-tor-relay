@@ -1,0 +1,98 @@
+#!/bin/bash
+set -e
+#
+SSH_CONF=/etc/ssh/sshd_config
+mv $SSH_CONF /etc/ssh/sshd_config.bak
+touch $SSH_CONF
+echo -e "$BLUE""Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits.""$END"
+echo -e "$RED"
+read SSH_PORT
+echo -e "$END"
+if [[ $SSH_PORT -ge 1 || $SSH_PORT -le 99999 ]]; then
+echo -e "\nPort $SSH_PORT\n" > $SSH_CONF
+else
+echo -e $RED"THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"$END
+exit 0
+fi
+echo -e "$BLUE""Do you want to add an ssh key? (Y/no)""$END"
+echo -e "$RED"
+read HAVE_KEY
+echo -e "$END"
+if [[ $HAVE_KEY = no ]]; then
+sleep 1
+else
+echo -e "$BLUE""Please paste your public key (beginning with ssh-rsa).""$END"
+echo -e "$RED"
+read SSH_KEY
+echo -e "$END"
+if [[ -e /"$USER"/.ssh ]]; then
+echo -e "\n$SSH_KEY" >> /$USER/.ssh/authorized_keys
+else
+mkdir /$USER/.ssh/
+echo -e "$SSH_KEY" > /$USER/.ssh/authorized_keys
+fi
+fi
+echo -e "\nPasswordAuthentication no\n\nPermitRootLogin without-password\n\nStrictModes yes\n\nProtocol 2\n\nIgnoreRhosts yes\n\nGSSAPIAuthentication no\n\nChallengeResponseAuthentication no\n\nKerberosAuthentication no\n\nHostbasedAuthentication no\n\nX11Forwarding no\n\nPrintLastLog yes\n\nPermitEmptyPasswords no\n\nUsePriveledgeSeperation yes\n\nUseLogin no\n\nPermitUserEnvironment no\n\nUsePAM no\n\nAllowTcpForwarding no\n\nLoginGraceTime 300\n\nMaxStartups 2\n\nCiphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128\n" >> "$SSH_CONF"
+mv $SSH_CONF /root/temp.sshconf
+sed '/^$/d' /root/temp.sshconf > $SSH_CONF
+rm -f /root/temp.sshconf
+chmod 0700 /root/.ssh
+chmod 0600 /root/.ssh/*
+service ssh restart
+echo -e "$RED"
+cat /etc/ssh/sshd_config
+echo -e "$END"
+echo -e "$BLUE""\nPress enter to start updating and set time.""$END"
+read
+apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
+apt-get -y install nano screen sudo ntp ntpdate haveged attr
+service ntp stop
+ntpdate 0.europe.pool.ntp.org
+service ntp start
+RELEASE="$(lsb_release -c | cut -b 10-)"
+echo -e "\ndeb http://deb.torproject.org/torproject.org "$RELEASE" main" >> /etc/apt/sources.list
+gpg --keyserver keys.gnupg.net --recv A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89
+gpg --export 886DDD89 | apt-key add –
+apt-get update
+apt-get -y install deb.torproject.org-keyring
+apt-get -y install tor tor-arm obfsproxy unbound
+echo "nameserver 127.0.0.1" > /etc/resolv.conf
+chattr +i /etc/resolv.conf
+mv /etc/tor/torrc /etc/tor/torrc.bak
+touch /etc/tor/torrc
+echo -e "relay or bridge?"
+  read RELAY
+    if [[ "$RELAY" = "relay" ]]; then
+        echo -e "\033[1;33m""Setting up for a relay.""\033[0m"
+        service tor stop
+        mv /etc/tor/torrc /etc/tor/torrc.bak
+        echo -e "ORPort 22443\nDirPort 80\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0" > /etc/tor/torrc
+        echo -e "\033[1;33m""\nNICKNAME?""\033[0m"
+        read NICK
+        echo -e "\033[1;33m""\nCONTACT?""\033[0m"
+          read CONTACT
+        echo -e -n "Nickname "$NICK"\nContactInfo "$CONTACT"\n" >> /etc/tor/torrc
+        echo -e "#\n#\n" >> /etc/tor/torrc
+        service tor start
+
+    else
+        echo -e "\033[1;33m""Public or private bridge? (pub/priv)""\033[0m"
+          read PUB_PRIV
+            if [[ "$PUB_PRIV" = "pub" ]]; then
+                service tor stop
+                mv /etc/tor/torrc /etc/tor/torrc.bak
+                echo -e "ORPort 11443\nExtORPort 22443\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed" > /etc/tor/torrc
+                echo -e "\033[1;33m""\nNICKNAME?""\033[0m"
+                  read NICK
+                echo -e -n "Nickname $NICK"\n" >> /etc/tor/torrc
+                echo -e "#\n#\n" >> /etc/tor/torrc
+                service tor start
+            else
+                service tor stop
+                mv /etc/tor/torrc /etc/tor/torrc.bak
+                echo -e "ORPort11443\nExtORPort 22443\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed\nPublishServerDescriptor 0" > /etc/tor/torrc
+                service tor start
+            fi
+        fi
+echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
+exit 0
