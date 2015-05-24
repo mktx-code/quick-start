@@ -38,9 +38,6 @@ rm -f /root/temp.sshconf
 chmod 0700 /root/.ssh
 chmod 0600 /root/.ssh/*
 service ssh restart
-cat /etc/ssh/sshd_config
-echo -e "\nPress enter to start updating and set time."
-  read
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
 apt-get install -y nano screen sudo pwgen ntp ntpdate haveged attr
 echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
