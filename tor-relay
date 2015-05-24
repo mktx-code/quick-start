@@ -84,4 +84,5 @@ echo -e "relay or bridge?"
                 service tor start
             fi
         fi
+echo "Success. Good bye."
 exit 0
