@@ -1,8 +1,21 @@
 #!/bin/bash
 set -e
 #
+clear
+echo -e "Stop tor."
+service tor stop
+chattr -i /etc/resolv.conf
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
 echo -e "Hidden service relay? (Y/no)"
   read HS_RELAY
+    if [[ "$HS_RELAY" != "no" ]]; then
+        echo -e "Stop tor."
+        service tor stop
+        chattr -i /etc/resolv.conf
+        echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    else
+        sleep 1
+    fi
 echo -e "Collecting external ip"
 wget -q wtfismyip.com/text -O /root/ip
 IP="$(cat /root/ip)"
@@ -89,7 +102,6 @@ if [[  "$HS_RELAY" != "no" ]]; then
     echo -e "Hidden service address is:"
     echo -e "$HS_URL""\033[0m"
     echo -d "\nEnter to continue"
-    chattr -i /etc/resolv.conf
     echo "nameserver 127.0.0.1" > /etc/resolv.conf
     chattr +i /etc/resolv.conf
       read
