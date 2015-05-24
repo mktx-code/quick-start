@@ -20,7 +20,7 @@ else
 echo -e "Please paste your public key (beginning with ssh-rsa)."
 read SSH_KEY
 if [[ -e /"$USER"/.ssh ]]; then
-echo -e "\n"$SSH_KEY""" >> /"$USER"/.ssh/authorized_keys
+echo -e "\n"$SSH_KEY"" >> /"$USER"/.ssh/authorized_keys
 else
 mkdir /"$USER"/.ssh/
 echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
@@ -61,7 +61,7 @@ echo -e "relay or bridge?"
         read NICK
         echo -e "\nCONTACT?"
           read CONTACT
-        echo -e -n "Nickname "$NICK"\nContactInfo "$CONTACT"\n" >> /etc/tor/torrc
+        echo -e "Nickname "$NICK"\nContactInfo "$CONTACT"\n" >> /etc/tor/torrc
         echo -e "#\n#\n" >> /etc/tor/torrc
         service tor start
 
