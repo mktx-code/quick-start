@@ -38,6 +38,9 @@ echo -e "\nPasswordAuthentication no\n\nPermitRootLogin without-password\n\nStri
 mv $SSH_CONF /root/temp.sshconf
 sed '/^$/d' /root/temp.sshconf > $SSH_CONF
 rm -f /root/temp.sshconf
+chmod 0700 /root/.ssh
+chmod 0600 /root/.ssh/*
+service ssh restart
 echo -e "$RED"
 cat /etc/ssh/sshd_config
 echo -e "$END"
