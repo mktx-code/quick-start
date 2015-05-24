@@ -1,11 +1,12 @@
 #!/bin/bash
+BLUE="\033[0;34m"
 RED="\033[0;31m"
 END="\033[0m"
 set -e
 SSH_CONF=/etc/ssh/sshd_config
 mv $SSH_CONF /etc/ssh/sshd_config.bak
 touch $SSH_CONF
-echo -e "$RED""Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits.""$END"
+echo -e "$BLUE""Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits.""$END"
   echo -e "$RED"
   read SSH_PORT
   echo -e "$END"
@@ -15,14 +16,14 @@ echo -e "$RED""Please select the new port for ssh (default is 22).\nIt should be
           echo -e $RED"THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"$END
           exit 0
       fi
-echo -e "$RED""Do you want to add an ssh key? (Y/no)""$END"
+echo -e "$BLUE""Do you want to add an ssh key? (Y/no)""$END"
   echo -e "$RED"
   read HAVE_KEY
   echo -e "$END"
     if [[ $HAVE_KEY = no ]]; then
         sleep 1
     else
-        echo -e "$RED""Please paste your public key (beginning with ssh-rsa).""$END"
+        echo -e "$BLUE""Please paste your public key (beginning with ssh-rsa).""$END"
           echo -e "$RED"
           read SSH_KEY
           echo -e "$END"
@@ -40,7 +41,7 @@ rm -f /root/temp.sshconf
 echo -e "$RED"
 cat /etc/ssh/sshd_config
 echo -e "$END"
-echo -e "\nPress enter."
+echo -e "$BLUE""\nPress enter.""$END"
   read
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
 apt-get install ntp ntpdate sudo screen git haveged curl atop pwgen secure-delete lvm2 cryptsetup -y
