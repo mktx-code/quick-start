@@ -23,7 +23,9 @@ echo -e $YLW"Do you want to add an ssh key? (Y/no)"$END
         sleep 1
     else
         echo -e $YLW"Please paste your public key (beginning with ssh-rsa)."$END
+          echo -e "$RED"
           read SSH_KEY
+          echo -e "$END"
             if [[ -e /"$USER"/.ssh ]]; then
                 echo -e "\n$SSH_KEY" >> /$USER/.ssh/authorized_keys
             else
@@ -35,7 +37,9 @@ echo -e "\nPasswordAuthentication no\n\nPermitRootLogin without-password\n\nStri
 mv $SSH_CONF /root/temp.sshconf
 sed '/^$/d' /root/temp.sshconf > $SSH_CONF
 rm -f /root/temp.sshconf
+echo -e "$RED"
 cat /etc/ssh/sshd_config
+echo -e "$END"
 echo -e "\nPress enter."
   read
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
@@ -44,3 +48,4 @@ service ntp stop
 ntpdate 0.europe.pool.ntp.org
 service ntp start
 echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
+exit 0
