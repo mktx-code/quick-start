@@ -53,12 +53,8 @@ echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "
 service ntp stop
 ntpdate 0.europe.pool.ntp.org
 service ntp start
-BTCSRC_EXISTS="$(ls -al /root/ | grep -c "bitcoinsrc")"
-  if [[ "$BTCSRC_EXISTS" -lt "1" ]]; then
-      mkdir /root/bitcoinsrc
-  else
-      sleep 1
-  fi
+rm -rf /root/bitcoinsrc
+mkdir /root/bitcoinsrc
 cd /root/bitcoinsrc
 rm -rf /home/bitnode/.bitcoin
 # Not so fast to build 
