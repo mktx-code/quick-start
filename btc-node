@@ -76,16 +76,11 @@ echo "Build from source? (Y/no)"
         rm -rf *.tar.gz
         echo -e "sudo –u bitnode –i /home/bitnode/bitcoin-0.10.2/bin/bitcoind\nexit 0" > /etc/rc.local
     fi
-MAKE_USER="$(cat /etc/passwd | grep -c bitnode)"
-  if [[ "$MAKE_USER" -lt "1" ]]; then
-      adduser bitnode
-      adduser bitnode sudo
-      mkdir /home/bitnode/.bitcoin
-      touch /home/bitnode/.bitcoin/bitcoin.conf
-  else
-      mkdir /home/bitnode/.bitcoin
-      touch /home/bitnode/.bitcoin/bitcoin.conf
-  fi
+adduser bitnode
+adduser bitnode sudo
+rm -rf /home/bitnode/.bitcoin
+mkdir /home/bitnode/.bitcoin
+touch /home/bitnode/.bitcoin/bitcoin.conf
 mv /root/bitcoinsrc/bitcoin* /home/bitnode/
 RPC_PASS=$(pwgen -n -s 68 1)
 RPC_USER=user$(pwgen -B -n -s 10 1)
