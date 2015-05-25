@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 #
+if [ $UID -ne 0 ]; then
+    echo -e $RED"This program must be run as root."$END
+    sleep 2
+    exit 0
+fi
 clear
 echo -e "Hidden service relay? (Y/no)"
   read HS_RELAY
