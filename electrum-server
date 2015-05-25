@@ -88,7 +88,7 @@ echo "\nHidden service? (Y/no)"
     else
         echo -e "\nusername = bitnode\nhost = 0.0.0.0\nelectrum_rpc_port = 8000\nelectrum_tcp_port = 50001\nelectrum_tcp_ssl_port = 50002\nssl_certfile = /home/bitnode/electrum-server/ssl/electrum-server.crt\nssl_keyfile = /home/bitnode/electrum-server/ssl/electrum-privatekey.key\nlogfile = /home/bitnode/electrum-server/electrum.log\npath = /home/bitnode/electrum-server/electrum-fulltree-10000-lastest\npruning_limit = 10000\nbitcoind_host = localhost\nbitcoind_port = 8332\nbitcoind_user = "$RPC_USER"\nbitcoind_password = "$RPC_PASSWORD""
     fi
-echo -d "sudo -u bitnode -i /home/bitnode/bitcoin-0.10.2/bin/bitcoind\nelectrum-server start\nexit 0" > /etc/rc.local
+echo -e "sudo -u bitnode -i /home/bitnode/bitcoin-0.10.2/bin/bitcoind\nelectrum-server start\nexit 0" > /etc/rc.local
 electrum-server start
 echo "Done. Good bye."
 exit 0
