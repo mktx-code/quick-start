@@ -114,5 +114,6 @@ else
     echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nlisten=1\nbind=0.0.0.0:8333\nexternalip="$IP"" > /home/bitnode/.bitcoin/bitcoin.conf
     chown -R bitnode /home/bitnode/.bitcoin
 fi
+sudo -u bitnode -i /home/bitnode/bitcoin-0.10.2/bin/bitcoind
 rm -rf /root/ip
 exit 0
