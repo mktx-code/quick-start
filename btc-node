@@ -102,7 +102,7 @@ if [[  "$HS_RELAY" != "no" ]]; then
     echo "nameserver 127.0.0.1" > /etc/resolv.conf
     chattr +i /etc/resolv.conf
       read
-    echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nproxy=127.0.0.1:9050\nexternalip="$HS_URL"\nlisten=1\nbind=127.0.0.1:8333" > /home/bitnode/.bitcoin/bitcoin.conf
+    echo -e "txindex=1\ndaemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nproxy=127.0.0.1:9050\nexternalip="$HS_URL"\nlisten=1\nbind=127.0.0.1:8333" > /home/bitnode/.bitcoin/bitcoin.conf
     echo -e "Do you want your node to be accessible to all or only tor users? (all/tor)"
       read TOR_ALL
           if [[ "$TOR_ALL" = "all" ]]; then
@@ -113,7 +113,7 @@ if [[  "$HS_RELAY" != "no" ]]; then
     echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
     chown -R bitnode /home/bitnode/.bitcoin
 else
-    echo -e "daemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nlisten=1\nbind=0.0.0.0:8333\nexternalip="$IP"" > /home/bitnode/.bitcoin/bitcoin.conf
+    echo -e "txindex=1\ndaemon=1\nrpcuser="$RPC_USER"\nrpcpassword="$RPC_PASS"\nmaxconnections=700\nlisten=1\nbind=0.0.0.0:8333\nexternalip="$IP"" > /home/bitnode/.bitcoin/bitcoin.conf
     chown -R bitnode /home/bitnode/.bitcoin
 fi
 sudo -u bitnode -i /home/bitnode/bitcoin-0.10.2/bin/bitcoind
