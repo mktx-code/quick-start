@@ -1,57 +1,59 @@
 #!/bin/bash
 set -e
 #
-if [ $UID -ne 0 ]; then
-    echo -e $RED"This program must be run as root."$END
+if [ "$UID" -ne "0" ]; then
+    echo -e "This program must be run as root."
     sleep 2
     exit 0
 fi
 clear
 echo -e "Hidden service relay? (Y/no)"
   read HS_RELAY
-    if [[ "$HS_RELAY" != "no" ]]; then
+    if [[ "$HS_RELAY" -ne "no" ]]; then
         echo -e "Stop tor."
         service tor stop
         chattr -i /etc/resolv.conf
         echo "nameserver 8.8.8.8" > /etc/resolv.conf
-    else
-        sleep 1
     fi
 echo -e "Collecting external ip"
 wget -q wtfismyip.com/text -O /root/ip
 IP="$(cat /root/ip)"
-SSH_CONF=/etc/ssh/sshd_config
-mv "$SSH_CONF" /etc/ssh/sshd_config.bak
-touch "$SSH_CONF"
-echo -e "Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits."
-    read SSH_PORT
-      if [[ "$SSH_PORT" -ge "1" || "$SSH_PORT" -le 99999 ]]; then
-          echo -e "\nPort $SSH_PORT\n" > "$SSH_CONF"
-      else
-          echo -e "THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"
-          exit 0
-      fi
-echo -e "Do you want to add an ssh key? (Y/no)"
-  read HAVE_KEY
-    if [[ "$HAVE_KEY" = "no" ]]; then
-        sleep 1
-    else
-        echo -e "Please paste your public key (beginning with ssh-rsa)."
-          read SSH_KEY
-            if [[ -e /"$USER"/.ssh ]]; then
-                echo -e "\n"$SSH_KEY"" >> /"$USER"/.ssh/authorized_keys"
+echo -e "SSH setup?"
+  read SSH_SETUP
+    if [[ "$SSH_SETUP" -ne "no" ]]; then
+        SSH_CONF=/etc/ssh/sshd_config
+        mv "$SSH_CONF" /etc/ssh/sshd_config.bak
+        touch "$SSH_CONF"
+        echo -e "Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits."
+          read SSH_PORT
+            if [[ "$SSH_PORT" -ge "1" || "$SSH_PORT" -le 99999 ]]; then
+                echo -e "\nPort $SSH_PORT\n" > "$SSH_CONF"
             else
-                mkdir /"$USER"/.ssh/
-                echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys"
+                echo -e "THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"
+                exit 0
             fi
-    fi
-echo -e "\nProtocol 2\n\nHostKey /etc/ssh/ssh_host_rsa_key\n\nHostKey /etc/ssh/ssh_host_dsa_key\n\nHostKey /etc/ssh/ssh_host_ecdsa_key\n\nHostKey /etc/ssh/ssh_host_ed25519_key\n\nUsePrivilegeSeparation yes\n\nKeyRegenerationInterval 3600\n\nServerKeyBits 1024\n\nSyslogFacility AUTH\n\nLogLevel INFO\n\nLoginGraceTime 120\n\nPermitRootLogin yes\n\nStrictModes yes\n\nRSAAuthentication yes\n\nPubkeyAuthentication yes\n\nAuthorizedKeysFile /root/.ssh/authorized_keys\n\nIgnoreRhosts yes\n\nHostbasedAuthentication no\n\nRhostsRSAAuthentication no\nPermitEmptyPasswords no\n\nChallengeResponseAuthentication no\n\nPasswordAuthentication no\n\nKerberosAuthentication no\n\nGSSAPIAuthentication no\n\nX11Forwarding yes\n\nX11DisplayOffset 10\n\nPrintMotd no\n\nPrintLastLog yes\n\nTCPKeepAlive yes\n\nAcceptEnv LANG LC_*\n\nSubsystem sftp /usr/lib/openssh/sftp-server\n\nCiphers aes256-ctr,aes256-cbc,aes128-ctr,aes128-cbc,3des-cbc\n\nUsePAM no" >> "$SSH_CONF"
-mv "$SSH_CONF" /root/temp.sshconf
-sed '/^$/d' /root/temp.sshconf > "$SSH_CONF"
-rm -f /root/temp.sshconf
-chmod 0700 /root/.ssh
-chmod 0600 /root/.ssh/*
-service ssh restart
+        echo -e "Do you want to add an ssh key? (Y/no)"
+          read HAVE_KEY
+            if [[ "$HAVE_KEY" = "no" ]]; then
+                sleep 1
+            else
+                echo -e "Please paste your public key (beginning with ssh-rsa)."
+                  read SSH_KEY
+                    if [[ -e /"$USER"/.ssh ]]; then
+                        echo -e "\n"$SSH_KEY"" >> /"$USER"/.ssh/authorized_keys
+                    else
+                        mkdir /"$USER"/.ssh/
+                        echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
+                    fi
+            fi
+        echo -e "\nProtocol 2\n\nHostKey /etc/ssh/ssh_host_rsa_key\n\nHostKey /etc/ssh/ssh_host_dsa_key\n\nHostKey /etc/ssh/ssh_host_ecdsa_key\n\nHostKey /etc/ssh/ssh_host_ed25519_key\n\nUsePrivilegeSeparation yes\n\nKeyRegenerationInterval 3600\n\nServerKeyBits 1024\n\nSyslogFacility AUTH\n\nLogLevel INFO\n\nLoginGraceTime 120\n\nPermitRootLogin yes\n\nStrictModes yes\n\nRSAAuthentication yes\n\nPubkeyAuthentication yes\n\nAuthorizedKeysFile /root/.ssh/authorized_keys\n\nIgnoreRhosts yes\n\nHostbasedAuthentication no\n\nRhostsRSAAuthentication no\nPermitEmptyPasswords no\n\nChallengeResponseAuthentication no\n\nPasswordAuthentication no\n\nKerberosAuthentication no\n\nGSSAPIAuthentication no\n\nX11Forwarding yes\n\nX11DisplayOffset 10\n\nPrintMotd no\n\nPrintLastLog yes\n\nTCPKeepAlive yes\n\nAcceptEnv LANG LC_*\n\nSubsystem sftp /usr/lib/openssh/sftp-server\n\nCiphers aes256-ctr,aes256-cbc,aes128-ctr,aes128-cbc,3des-cbc\n\nUsePAM no" >> "$SSH_CONF"
+        mv "$SSH_CONF" /root/temp.sshconf
+        sed '/^$/d' /root/temp.sshconf > "$SSH_CONF"
+        rm -f /root/temp.sshconf
+        chmod 0700 /root/.ssh
+        chmod 0600 /root/.ssh/*
+        service ssh restart
+    fi    
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
 apt-get install -y nano screen sudo pwgen ntp ntpdate haveged attr
 echo -e "\nhardstatus on\nhardstatus alwayslastline\n$(echo 'hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "')\n" >> /etc/screenrc
