@@ -26,7 +26,7 @@ mkdir /"$USER"/.ssh/
 echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
 fi
 fi
-echo -e "\nPasswordAuthentication no\n\nKerberosAuthentication no\n\nX11Forwarding no\n\nPrintLastLog yes\n\nPermitEmptyPasswords no\n\nUsePriveledgeSeperation yes\n\nUsePAM no\n\nLoginGraceTime 300\n\nMaxStartups 5\n\nCiphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128\n" >> "$SSH_CONF"
+echo -e "\nPasswordAuthentication no\nGSSAPIAuthentication no\n\nKerberosAuthentication no\n\nX11Forwarding yes\n\nX11DisplayOffset 10\n\nPrintMotd no\n\nPrintLastLog yes\n\nTCPKeepAlive yes\n\nLoginGraceTime 120\n\nStrictModes yes\n\nRSAAuthentication yes\n\nPubkeyAuthentication yes\n\nProtocol 2\n\nHostKey /etc/ssh/ssh_host_rsa_key\n\nHostKey /etc/ssh/ssh_host_dsa_key\n\nHostKey /etc/ssh/ssh_host_ecdsa_key\n\nHostKey /etc/ssh/ssh_host_ed25519_key\n\nSyslogFacility AUTH\n\nLogLevel INFO\n\nAuthorizedKeysFile	%h/.ssh/authorized_keys\n\nIgnoreRhosts yes\n\nRhostsRSAAuthentication no\n\nHostbasedAuthentication no\n\nChallengeResponseAuthentication no\n\nPrintLastLog yes\n\nPermitEmptyPasswords no\n\nUsePriveledgeSeperation yes\n\nUsePAM no\n\nMaxStartups 2\n\nCiphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128\n" >> "$SSH_CONF"
 mv "$SSH_CONF" /root/temp.sshconf
 sed '/^$/d' /root/temp.sshconf > "$SSH_CONF"
 rm -f /root/temp.sshconf
