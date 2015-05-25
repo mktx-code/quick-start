@@ -4,28 +4,28 @@ set -e
 SSH_CONF=/etc/ssh/sshd_config
 mv "$SSH_CONF" /etc/ssh/sshd_config.bak
 touch "$SSH_CONF"
-echo -e "Please select the new port for ssh (default is 22).\nIt should be a number that is 5 digits."
-read SSH_PORT
-if [[ "$SSH_PORT" -ge "1" || "$SSH_PORT" -le "99999" ]]; then
-echo -e "\nPort $SSH_PORT\n" > "$SSH_CONF"
-else
-echo -e "THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"
-exit 0
-fi
+echo -e "\nSSH port:"
+  read SSH_PORT
+    if [[ "$SSH_PORT" -ge "1" || "$SSH_PORT" -le "99999" ]]; then
+        echo -e "\nPort $SSH_PORT\n" > "$SSH_CONF"
+    else
+       echo -e "THAT WAS NOT AN ACCEPTABLE PORT!!!! RE-RUN THE SCRIPT AND PUT SOMETHING SENSIBLE HERE BEFORE YOU LOCK YOURSELF OUT!!"
+       exit 0
+    fi
 echo -e "Do you want to add an ssh key? (Y/no)"
-read HAVE_KEY
-if [[ "$HAVE_KEY" = "no" ]]; then
-sleep 1
-else
-echo -e "Please paste your public key (beginning with ssh-rsa)."
-read SSH_KEY
-if [[ -e /"$USER"/.ssh ]]; then
-echo -e "\n"$SSH_KEY"" >> /"$USER"/.ssh/authorized_keys
-else
-mkdir /"$USER"/.ssh/
-echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
-fi
-fi
+  read HAVE_KEY
+    if [[ "$HAVE_KEY" = "no" ]]; then
+        sleep 1
+    else
+        echo -e "Please paste your public key (beginning with ssh-rsa)."
+          read SSH_KEY
+            if [[ -e /"$USER"/.ssh ]]; then
+                echo -e "\n"$SSH_KEY"" >> /"$USER"/.ssh/authorized_keys
+            else
+                mkdir /"$USER"/.ssh/
+                echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
+            fi
+    fi
 echo -e "\nProtocol 2\n\nHostKey /etc/ssh/ssh_host_rsa_key\n\nHostKey /etc/ssh/ssh_host_dsa_key\n\nHostKey /etc/ssh/ssh_host_ecdsa_key\n\nHostKey /etc/ssh/ssh_host_ed25519_key\n\nUsePrivilegeSeparation yes\n\nKeyRegenerationInterval 3600\n\nServerKeyBits 1024\n\nSyslogFacility AUTH\n\nLogLevel INFO\n\nLoginGraceTime 120\n\nPermitRootLogin yes\n\nStrictModes yes\n\nRSAAuthentication yes\n\nPubkeyAuthentication yes\n\nAuthorizedKeysFile /root/.ssh/authorized_keys\n\nIgnoreRhosts yes\n\nssh_known_hosts\n\nRhostsRSAAuthentication no\n\nHostbasedAuthentication no\n\nRhostsRSAAuthentication\n\nPermitEmptyPasswords no\n\nChallengeResponseAuthentication no\n\nPasswordAuthentication no\n\nKerberosAuthentication no\n\nGSSAPIAuthentication no\n\nX11Forwarding yes\n\nX11DisplayOffset 10\n\nPrintMotd no\n\nPrintLastLog yes\n\nTCPKeepAlive yes\n\nAcceptEnv LANG LC_*\n\nSubsystem sftp /usr/lib/openssh/sftp-server\n\nUsePAM no" >> "$SSH_CONF"
 mv "$SSH_CONF" /root/temp.sshconf
 sed '/^$/d' /root/temp.sshconf > "$SSH_CONF"
@@ -50,7 +50,7 @@ echo "nameserver 127.0.0.1" > /etc/resolv.conf
 chattr +i /etc/resolv.conf
 mv /etc/tor/torrc /etc/tor/torrc.bak
 touch /etc/tor/torrc
-echo -e "relay or bridge?"
+echo -e "\nRelay or bridge?"
   read RELAY
     if [[ "$RELAY" = "relay" ]]; then
         echo -e "Setting up for a relay."
@@ -83,6 +83,6 @@ echo -e "relay or bridge?"
                 echo -e "ORPort11443\nExtORPort 22443\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed\nPublishServerDescriptor 0" > /etc/tor/torrc
                 service tor start
             fi
-        fi
+    fi
 echo "Success. Good bye."
 exit 0
