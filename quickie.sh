@@ -3,6 +3,11 @@ BLUE="\033[0;34m"
 RED="\033[0;31m"
 END="\033[0m"
 set -e
+if [ $UID -ne 0 ]; then
+    echo -e $RED"This program must be run as root."$END
+    sleep 2
+    exit 0
+fi
 SSH_CONF=/etc/ssh/sshd_config
 mv $SSH_CONF /etc/ssh/sshd_config.bak
 touch $SSH_CONF
