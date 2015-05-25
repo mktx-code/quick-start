@@ -12,7 +12,7 @@ wget -q wtfismyip.com/text -O /root/ip
 IP="$(cat /root/ip)"
 echo -e "SSH setup?"
   read SSH_SETUP
-    if [ "$SSH_SETUP" -ne "no" ]; then
+    if [ "$SSH_SETUP" != "no" ]; then
         SSH_CONF=/etc/ssh/sshd_config
         mv "$SSH_CONF" /etc/ssh/sshd_config.bak
         touch "$SSH_CONF"
