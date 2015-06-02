@@ -31,7 +31,7 @@ echo -e "Do you want to add an ssh key? (Y/no)"
                 echo -e "$SSH_KEY" > /"$USER"/.ssh/authorized_keys
             fi
     fi
-echo -e "\nProtocol 2\n\nHostKey /etc/ssh/ssh_host_rsa_key\n\nHostKey /etc/ssh/ssh_host_dsa_key\n\nHostKey /etc/ssh/ssh_host_ecdsa_key\n\nHostKey /etc/ssh/ssh_host_ed25519_key\n\nUsePrivilegeSeparation yes\n\nKeyRegenerationInterval 3600\n\nServerKeyBits 1024\n\nSyslogFacility AUTH\n\nLogLevel INFO\n\nLoginGraceTime 120\n\nPermitRootLogin without-password\n\nStrictModes yes\n\nRSAAuthentication yes\n\nPubkeyAuthentication yes\n\nAuthorizedKeysFile /root/.ssh/authorized_keys\n\nIgnoreRhosts yes\n\nHostbasedAuthentication no\n\nRhostsRSAAuthentication no\n\nPermitEmptyPasswords no\n\nChallengeResponseAuthentication no\n\nPasswordAuthentication no\n\nKerberosAuthentication no\n\nGSSAPIAuthentication no\n\nX11Forwarding yes\n\nX11DisplayOffset 10\n\nPrintMotd no\n\nPrintLastLog yes\n\nTCPKeepAlive yes\n\nAcceptEnv LANG LC_*\n\nSubsystem sftp /usr/lib/openssh/sftp-server\n\nCiphers aes256-ctr,aes256-cbc,aes128-ctr,aes128-cbc,3des-cbc\n\nUsePAM no" >> "$SSH_CONF"
+echo -e "\nProtocol 2\n\nHostKey /etc/ssh/ssh_host_rsa_key\n\nHostKey /etc/ssh/ssh_host_dsa_key\n\nHostKey /etc/ssh/ssh_host_ecdsa_key\n\nUsePrivilegeSeparation yes\n\nKeyRegenerationInterval 3600\n\nServerKeyBits 1024\n\nSyslogFacility AUTH\n\nLogLevel INFO\n\nLoginGraceTime 120\n\nPermitRootLogin without-password\n\nStrictModes yes\n\nRSAAuthentication yes\n\nPubkeyAuthentication yes\n\nAuthorizedKeysFile /root/.ssh/authorized_keys\n\nIgnoreRhosts yes\n\nHostbasedAuthentication no\n\nRhostsRSAAuthentication no\n\nPermitEmptyPasswords no\n\nChallengeResponseAuthentication no\n\nPasswordAuthentication no\n\nKerberosAuthentication no\n\nGSSAPIAuthentication no\n\nX11Forwarding yes\n\nX11DisplayOffset 10\n\nPrintMotd no\n\nPrintLastLog yes\n\nTCPKeepAlive yes\n\nAcceptEnv LANG LC_*\n\nSubsystem sftp /usr/lib/openssh/sftp-server\n\nCiphers aes256-ctr,aes256-cbc,aes128-ctr,aes128-cbc,3des-cbc\n\nUsePAM no" >> "$SSH_CONF"
 chmod 0700 /root/.ssh
 chmod 0600 /root/.ssh/*
 apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade
@@ -57,7 +57,7 @@ echo -e "\nRelay or bridge?"
         echo -e "Setting up for a relay."
         service tor stop
         mv /etc/tor/torrc /etc/tor/torrc.bak
-        echo -e "ORPort 22443\nDirPort 80\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0" > /etc/tor/torrc
+        echo -e "ORPort 22443\nDirPort 80\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0" > /etc/tor/torrc
         echo -e "\nNICKNAME?"
         read NICK
         echo -e "\nCONTACT?"
@@ -72,7 +72,7 @@ echo -e "\nRelay or bridge?"
             if [[ "$PUB_PRIV" = "pub" ]]; then
                 service tor stop
                 mv /etc/tor/torrc /etc/tor/torrc.bak
-                echo -e "ORPort 11443\nExtORPort 22443\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed" > /etc/tor/torrc
+                echo -e "ORPort 11443\nExtORPort 22443\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed" > /etc/tor/torrc
                 echo -e "\033[1;33m""\nNICKNAME?""\033[0m"
                   read NICK
                 echo -e "\nNickname "$NICK"\n" >> /etc/tor/torrc
@@ -81,7 +81,7 @@ echo -e "\nRelay or bridge?"
             else
                 service tor stop
                 mv /etc/tor/torrc /etc/tor/torrc.bak
-                echo -e "ORPort11443\nExtORPort 22443\nDNSPort 53\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed\nPublishServerDescriptor 0" > /etc/tor/torrc
+                echo -e "ORPort11443\nExtORPort 22443\nSocksPort 127.0.0.1:9050\nControlPort 127.0.0.1:9051\nExitPolicy reject *:*\nDisableDebuggerAttachment 0\nBridgeRelay 1\nServerTransportPlugin obfs3,scramblesuit exec /usr/bin/obfsproxy managed\nPublishServerDescriptor 0" > /etc/tor/torrc
                 service tor start
             fi
     fi
